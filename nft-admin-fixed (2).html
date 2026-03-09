@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Abstract NFT Tier List</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}body{background:#060608;font-family:'Space Mono',monospace;min-height:100vh;overflow-x:hidden;}@keyframes dot-blink{0%,100%{opacity:0;transform:scale(0.6);}40%,60%{opacity:1;transform:scale(1);}}@keyframes title-shimmer{0%,100%{text-shadow:0 0 0px rgba(34,197,94,0);}30%{text-shadow:2px 0 0 rgba(255,0,80,0.4),-2px 0 0 rgba(0,220,255,0.4),0 0 30px rgba(34,197,94,0.5);}50%{text-shadow:0 0 40px rgba(34,197,94,0.7),0 0 80px rgba(34,197,94,0.2);}70%{text-shadow:-2px 0 0 rgba(255,0,80,0.3),2px 0 0 rgba(0,220,255,0.3);}}@keyframes title-sweep{0%{opacity:0;transform:translateY(32px) scaleY(1.15);letter-spacing:2px;filter:blur(8px);}60%{opacity:1;filter:blur(0);}100%{opacity:1;transform:translateY(0) scaleY(1);letter-spacing:8px;}}@keyframes ctx-appear{from{opacity:0;transform:scale(0.93) translateY(-4px);}to{opacity:1;transform:none;}}::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:rgba(255,255,255,0.02);}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}#bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}#navbar{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;background:rgba(6,6,8,0.72);backdrop-filter:blur(28px);border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;padding:0 20px;}#navbar-left-spacer{flex:1;}#navbar-center{display:flex;align-items:center;gap:6px;flex:0 0 auto;}#navbar-right{display:flex;align-items:center;gap:6px;flex:1;justify-content:flex-end;}#navbar-center{display:flex;align-items:center;gap:6px;justify-content:center;}#navbar-right{display:flex;align-items:center;gap:6px;justify-content:flex-end;}#navbar-left{display:none;}.nav-btn{display:flex;align-items:center;gap:5px;border-radius:9px;padding:5px 13px;font-size:10px;font-family:'Space Mono',monospace;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all 0.2s;border:1px solid;}#btn-undo{background:rgba(155,89,255,0.12);border-color:rgba(155,89,255,0.35);color:#b47fff;}#btn-undo:disabled{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.07);color:rgba(255,255,255,0.2);cursor:not-allowed;}#btn-upload{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#22c55e;}.undo-badge{background:rgba(155,89,255,0.3);border-radius:4px;padding:0 5px;font-size:9px;}#toast{position:fixed;top:62px;right:16px;padding:6px 14px;border-radius:9px;font-size:10px;font-family:'Space Mono',monospace;font-weight:700;letter-spacing:1px;z-index:999;display:none;backdrop-filter:blur(20px);background:rgba(6,6,8,0.94);}#file-drop-overlay{position:fixed;inset:0;z-index:50;background:rgba(34,197,94,0.04);backdrop-filter:blur(3px);border:2px dashed rgba(34,197,94,0.35);pointer-events:none;display:none;align-items:center;justify-content:center;}#file-drop-overlay span{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:6px;color:rgba(34,197,94,0.75);}#content{position:relative;z-index:1;padding:70px 40px 44px;max-width:1100px;margin:0 auto;}#title{text-align:center;margin-bottom:8px;padding-top:10px;font-family:'Bebas Neue',cursive;font-size:clamp(32px,6vw,58px);letter-spacing:8px;line-height:1;color:#fff;animation:title-sweep 1s cubic-bezier(0.16,1,0.3,1) both,title-shimmer 4s ease-in-out 1.2s infinite;}#title span{color:#22c55e;display:inline-block;animation:span-pop 1s cubic-bezier(0.16,1,0.3,1) 0.3s both;}@keyframes span-pop{0%{opacity:0;transform:translateY(32px) scaleY(1.15);filter:blur(8px);}60%{opacity:1;filter:blur(0);}100%{opacity:1;transform:translateY(0) scaleY(1);}}#hint{text-align:center;margin-bottom:20px;color:rgba(255,255,255,0.45);font-size:12px;letter-spacing:2px;font-family:'Space Mono',monospace;}.hint-icon{opacity:0.7;margin:0 3px;}.hint-dot{color:rgba(255,255,255,0.25);margin:0 6px;}#tiers{display:flex;flex-direction:column;gap:8px;}.tier-row{display:flex;align-items:stretch;width:100%;border-radius:18px;min-height:112px;overflow:hidden;border:1.5px solid;backdrop-filter:blur(28px);transition:all 0.2s;}.tier-accent{width:6px;min-width:6px;flex-shrink:0;}.tier-label{width:80px;min-width:80px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:51px;flex-shrink:0;transition:all 0.2s;}.drag-placeholder{}.tier-cards{display:flex;flex-wrap:wrap;gap:9px;padding:11px 14px;flex:1;align-items:center;align-content:flex-start;}.tier-empty{color:rgba(255,255,255,0.15);font-size:11px;letter-spacing:1px;font-style:italic;}#unranked-divider{display:flex;align-items:center;gap:12px;margin:6px 0 0;}#unranked-divider hr{flex:1;border:none;border-top:1px solid rgba(255,255,255,0.05);}#unranked-divider span{font-size:9px;color:rgba(255,255,255,0.18);letter-spacing:4px;font-weight:700;}#unranked-pool{width:100%;border-radius:18px;min-height:112px;border:1.5px dashed rgba(255,255,255,0.08);background:rgba(255,255,255,0.018);backdrop-filter:blur(28px);padding:16px 20px;transition:all 0.2s;}#unranked-cards{display:flex;flex-wrap:wrap;gap:9px;align-items:center;}.nft-wrap{position:relative;transition:transform 0.18s cubic-bezier(0.4,0,0.2,1),opacity 0.15s;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;}.nft-img-box{width:72px;height:72px;border-radius:16px;overflow:hidden;border:2px solid rgba(255,255,255,0.08);cursor:grab;background:rgba(0,0,0,0.35);transition:border-color 0.15s,box-shadow 0.15s;position:relative;user-select:none;}.nft-img-box img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}.nft-name{font-size:9px;font-family:'Space Mono',monospace;font-weight:700;color:rgba(255,255,255,0.55);text-align:center;width:72px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.insert-left{position:absolute;left:-7px;top:0;bottom:16px;width:3px;border-radius:2px;z-index:10;pointer-events:none;}.insert-right{position:absolute;right:-7px;top:0;bottom:16px;width:3px;border-radius:2px;z-index:10;pointer-events:none;}#ctx-menu{position:fixed;z-index:4000;background:rgba(8,8,14,0.97);backdrop-filter:blur(20px);border-radius:12px;padding:6px;min-width:170px;box-shadow:0 8px 32px rgba(0,0,0,0.8);animation:ctx-appear 0.12s ease-out;display:none;}.ctx-item{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;padding:8px 12px;cursor:pointer;text-align:left;}.ctx-sep{height:1px;background:rgba(255,255,255,0.06);margin:4px 8px;}#modal-overlay{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;}#modal-box{background:rgba(10,10,14,0.96);border:1px solid rgba(155,89,255,0.38);border-radius:18px;padding:28px;width:340px;box-shadow:0 0 60px rgba(155,89,255,0.12);}#modal-title{font-family:'Bebas Neue',cursive;font-size:18px;color:#9B59FF;letter-spacing:4px;margin-bottom:14px;}#modal-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(155,89,255,0.4);border-radius:10px;color:#fff;font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;box-sizing:border-box;margin-bottom:10px;}#modal-btns{display:flex;gap:8px;}#modal-save{flex:1;background:#9B59FF;border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;padding:9px 0;cursor:pointer;}#modal-cancel{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.4);font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;padding:9px 0;cursor:pointer;}#footer{text-align:center;margin-top:40px;padding-bottom:16px;animation:footer-rise 0.9s cubic-bezier(0.16,1,0.3,1) 0.6s both;}@keyframes footer-rise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}#footer a{display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,0.5);font-family:'Space Mono',monospace;font-size:13px;text-decoration:none;letter-spacing:2px;transition:color 0.25s,filter 0.25s,letter-spacing 0.3s;}#footer a:hover{color:#22c55e;letter-spacing:3.5px;animation:link-glitch 2.5s ease-in-out infinite;}@keyframes link-glitch{0%,90%,100%{filter:drop-shadow(0 0 10px rgba(34,197,94,0.9));}92%{filter:drop-shadow(3px 0 0 rgba(255,0,80,0.7)) drop-shadow(-3px 0 0 rgba(0,220,255,0.7));}94%{filter:drop-shadow(0 0 20px rgba(34,197,94,1)) drop-shadow(0 0 40px rgba(34,197,94,0.5));}96%{filter:drop-shadow(-2px 0 0 rgba(255,0,80,0.5)) drop-shadow(2px 0 0 rgba(0,220,255,0.5));}}.fc{color:rgba(255,255,255,0.35);}.fn{color:#22c55e;font-weight:700;}#ghost{position:fixed;pointer-events:none;z-index:9999;width:72px;height:72px;border-radius:16px;overflow:hidden;opacity:0.93;transform:translate(-50%,-50%) scale(1.1) rotate(2deg);display:none;}#ghost img{width:100%;height:100%;object-fit:cover;display:block;}
+#admin-panel{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);display:flex;flex-direction:column;overflow:hidden;}
+#admin-header{padding:18px 28px 14px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:14px;flex-shrink:0;}
+#admin-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:5px;color:#FFD700;}
+#admin-subtitle{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1px;margin-left:4px;}
+#admin-actions{margin-left:auto;display:flex;gap:8px;}
+.admin-btn{display:flex;align-items:center;gap:6px;border-radius:9px;padding:6px 16px;font-size:10px;font-family:'Space Mono',monospace;font-weight:700;cursor:pointer;letter-spacing:1px;border:1px solid;transition:all 0.15s;}
+#admin-upload-btn{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#22c55e;}
+#admin-download-btn{background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.35);color:#FFD700;}
+#admin-close-btn{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);}
+#admin-stats{font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:1px;}
+#admin-grid{flex:1;overflow-y:auto;padding:20px 28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;align-content:start;}
+#admin-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:rgba(255,255,255,0.15);font-size:13px;letter-spacing:2px;}
+#admin-empty svg{opacity:0.2;}
+.admin-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;transition:border-color 0.15s;}
+.admin-card:hover{border-color:rgba(255,255,255,0.15);}
+.admin-card-img{width:100%;aspect-ratio:1;border-radius:10px;overflow:hidden;background:rgba(0,0,0,0.4);position:relative;cursor:pointer;}
+.admin-card-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.admin-card-img-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;font-size:10px;color:#fff;letter-spacing:1px;font-family:'Space Mono',monospace;}
+.admin-card-img:hover .admin-card-img-overlay{opacity:1;}
+.admin-field{display:flex;flex-direction:column;gap:4px;}
+.admin-label{font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:1.5px;font-weight:700;}
+.admin-input{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-family:'Space Mono',monospace;font-size:11px;padding:7px 10px;outline:none;width:100%;box-sizing:border-box;transition:border-color 0.15s;}
+.admin-input:focus{border-color:rgba(155,89,255,0.5);}
+.admin-input.opensea:focus{border-color:rgba(32,129,226,0.5);}
+.admin-del{width:100%;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:8px;color:#f87171;font-family:'Space Mono',monospace;font-size:10px;padding:6px 0;cursor:pointer;letter-spacing:1px;transition:all 0.15s;}
+.admin-del:hover{background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.35);}
+#admin-drop-zone{position:absolute;inset:0;background:rgba(34,197,94,0.05);border:2px dashed rgba(34,197,94,0.4);border-radius:0;display:none;align-items:center;justify-content:center;z-index:10;pointer-events:none;}
+#admin-drop-zone span{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:6px;color:rgba(34,197,94,0.8);}
+
+
+#btn-reset{
+  background:none;
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:6px;
+  color:rgba(255,255,255,0.35);
+  font-family:'Space Mono',monospace;
+  font-size:9px;
+  letter-spacing:2px;
+  padding:4px 10px;
+  cursor:pointer;
+  transition:color 0.2s,border-color 0.2s,background 0.2s,transform 0.15s;
+  white-space:nowrap;
+}
+#btn-reset:hover{
+  color:rgba(255,100,100,0.9);
+  border-color:rgba(255,100,100,0.4);
+  background:rgba(255,80,80,0.08);
+  transform:scale(1.05);
+}
+#btn-reset:active{
+  transform:scale(0.95);
+}
+
+
+#navbar-left{display:flex;align-items:center;gap:6px;}
+#btn-undo{
+  background:rgba(155,89,255,0.1)!important;
+  border-color:rgba(155,89,255,0.35)!important;
+  color:rgba(155,89,255,0.8)!important;
+  position:relative;
+  overflow:hidden;
+}
+#btn-undo::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(155,89,255,0.15) 50%,transparent 100%);
+  transform:translateX(-100%);
+  transition:transform 0.4s ease;
+}
+#btn-undo:hover:not(:disabled)::after{transform:translateX(100%);}
+#btn-undo:hover:not(:disabled){
+  color:#9B59FF!important;
+  border-color:rgba(155,89,255,0.7)!important;
+  background:rgba(155,89,255,0.18)!important;
+  box-shadow:0 0 16px rgba(155,89,255,0.3);
+}
+#btn-undo:disabled{opacity:0.25!important;cursor:not-allowed;}
+
+#btn-reset{
+  background:rgba(255,80,80,0.08)!important;
+  border-color:rgba(255,100,100,0.3)!important;
+  color:rgba(255,110,110,0.75)!important;
+  position:relative;
+  overflow:hidden;
+}
+#btn-reset::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,80,80,0.15) 50%,transparent 100%);
+  transform:translateX(-100%);
+  transition:transform 0.4s ease;
+}
+#btn-reset:hover::after{transform:translateX(100%);}
+#btn-reset:hover{
+  color:rgba(255,100,100,1)!important;
+  border-color:rgba(255,100,100,0.6)!important;
+  background:rgba(255,80,80,0.15)!important;
+  box-shadow:0 0 16px rgba(255,80,80,0.25);
+}
+#btn-reset:active{transform:scale(0.95);}
+#btn-reset svg{transition:none;}
+
+@keyframes undo-click{0%{transform:rotate(0deg);}100%{transform:rotate(-360deg);}}@keyframes reset-click{0%{transform:rotate(0deg) scale(1);}50%{transform:rotate(-180deg) scale(1.3);}100%{transform:rotate(-360deg) scale(1);}}#btn-undo.clicked svg{animation:undo-click 0.4s cubic-bezier(0.4,0,0.2,1);}#btn-reset.clicked svg{animation:reset-click 0.45s cubic-bezier(0.4,0,0.2,1);}#search-wrap{display:flex;align-items:center;gap:8px;margin:0 auto 16px;max-width:340px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px 14px;transition:border-color 0.2s,box-shadow 0.2s;}#search-wrap:focus-within{border-color:rgba(255,255,255,0.25);box-shadow:0 0 0 2px rgba(255,255,255,0.06);}#search-input{flex:1;background:none;border:none;outline:none;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;}#search-input::placeholder{color:rgba(255,255,255,0.2);}#search-clear{background:none;border:none;color:rgba(255,255,255,0.25);cursor:pointer;font-size:11px;padding:0;line-height:1;transition:color 0.15s;}#search-clear:hover{color:rgba(255,255,255,0.7);}.nft-wrap.search-dim{opacity:0.15;filter:grayscale(1);transition:opacity 0.2s,filter 0.2s;}.nft-wrap.search-match{transition:opacity 0.2s,filter 0.2s,transform 0.2s;}.search-no-results{color:rgba(255,255,255,0.15);font-size:11px;letter-spacing:1px;font-family:'Space Mono',monospace;padding:8px 14px;}.search-no-results{color:rgba(255,255,255,0.15);font-size:11px;letter-spacing:1px;font-family:'Space Mono',monospace;padding:8px 14px;}#btn-screenshot{background:rgba(125,249,255,0.08)!important;border-color:rgba(125,249,255,0.3)!important;color:rgba(125,249,255,0.8)!important;}#btn-screenshot:hover{background:rgba(125,249,255,0.15)!important;border-color:rgba(125,249,255,0.6)!important;color:#7DF9FF!important;box-shadow:0 0 14px rgba(125,249,255,0.25);}#screenshot-flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:99999;transition:opacity 0.08s;}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script></head>
+<body>
+<div id="bg"></div>
+<div id="ghost"><img id="ghost-img" src="" alt=""/></div>
+
+<!-- ADMIN PANEL -->
+<!--ADMIN-START--><div id="admin-panel" style="display:none">
+  <div id="admin-header">
+    <div>
+      <div id="admin-title">&#9881; ADMIN PANEL</div>
+      <div id="admin-subtitle">MANAGE COLLECTIONS FOR SITE</div>
+    </div>
+    <span id="admin-stats">0 COLLECTIONS</span>
+    <div id="admin-actions">
+      <button class="admin-btn" id="admin-upload-btn" onclick="document.getElementById('admin-file-input').click()">&#8593; ADD IMAGES</button>
+      <input type="file" id="admin-file-input" accept="image/*" multiple style="display:none" onchange="adminHandleFiles(this.files)"/>
+      <button class="admin-btn" id="admin-download-btn" onclick="bakeToHTML()">&#11015; СКАЧАТЬ ДЛЯ САЙТА</button>
+      <button class="admin-btn" id="admin-close-btn" onclick="closeAdmin()">&#10005; CLOSE</button>
+    </div>
+  </div>
+  <div id="admin-grid" style="display:none"></div>
+  <div id="admin-empty">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+    <span>DROP IMAGES OR CLICK ADD</span>
+  </div>
+  <div id="admin-drop-zone"><span>DROP TO ADD</span></div>
+</div><!--ADMIN-END-->
+
+<div id="navbar">
+  <div id="navbar-left-spacer"></div>
+  <div id="navbar-center"><button class="nav-btn" id="btn-undo" onclick="var b=this;b.classList.remove('clicked');void b.offsetWidth;b.classList.add('clicked');setTimeout(function(){b.classList.remove('clicked');},450);undo()" disabled><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M3 13C5 7 10 4 16 5.5a9 9 0 0 1 5 7.5"/></svg>UNDO</button><button class="nav-btn" id="btn-reset" onclick="var b=this;b.classList.remove('clicked');void b.offsetWidth;b.classList.add('clicked');setTimeout(function(){b.classList.remove('clicked');},500);resetAll()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 3v5l4-2.5-4-2.5"/></svg>RESET</button></div>
+  <div id="navbar-right"><button class="nav-btn" id="btn-screenshot" onclick="takeScreenshot()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>SAVE</button><button class="nav-btn" id="btn-upload" onclick="document.getElementById('file-input').click()">&#8593; UPLOAD</button><input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handleFiles(this.files)"/><!--ADMINBTN-START--><button class="nav-btn" style="background:rgba(255,215,0,0.08);border-color:rgba(255,215,0,0.3);color:#FFD700;" onclick="openAdmin()">&#9881; ADMIN</button><!--ADMINBTN-END--></div>
+</div>
+<div id="toast"></div>
+<div id="file-drop-overlay"><span>DROP TO UPLOAD</span></div>
+<div id="ctx-menu">
+  <button class="ctx-item" id="ctx-opensea" style="display:none"></button>
+  <div class="ctx-sep" id="ctx-sep-os" style="display:none"></div>
+  <button class="ctx-item" id="ctx-rename" onclick="ctxRename()"></button>
+  <div class="ctx-sep"></div>
+  <button class="ctx-item" id="ctx-delete" onclick="ctxDelete()"></button>
+</div>
+<div id="modal-overlay" onclick="closeModal()">
+  <div id="modal-box" onclick="event.stopPropagation()">
+    <div id="modal-title">RENAME</div>
+    <input id="modal-input" type="text" placeholder="Collection name" onkeydown="if(event.key==='Enter')modalSave();if(event.key==='Escape')closeModal();"/>
+    <div id="modal-btns">
+      <button id="modal-save" onclick="modalSave()">SAVE</button>
+      <button id="modal-cancel" onclick="closeModal()">CANCEL</button>
+    </div>
+  </div>
+</div>
+<div id="content">
+  <div id="title">ABSTRACT <span>NFT TIER LIST</span></div>
+  <div id="search-wrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input id="search-input" type="text" placeholder="search collections..." autocomplete="off" oninput="doSearch(this.value)"/><button id="search-clear" onclick="clearSearch()" style="display:none">&#10005;</button></div><div id="hint"><span class="hint-icon">⠿</span> drag to move <span class="hint-dot">·</span> <span class="hint-icon">◱</span> right click for options</div>
+  <div id="tiers"></div>
+  <div id="unranked-divider"><hr/><span>UNRANKED</span><hr/></div>
+  <div id="unranked-pool"><div id="unranked-cards"></div></div>
+  <div id="footer">
+    <a href="https://x.com/Eyesblinks" target="_blank">
+      <span class="fc">Created by</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="#22c55e"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.26 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      <span class="fn">Eyesblinks</span>
+    </a>
+  </div>
+</div>
+<script>
+window._P=null;
+var TIERS=[{id:"S",label:"S",color:"#9B59FF",glow:"rgba(155,89,255,0.6)",bg:"rgba(155,89,255,0.13)",border:"rgba(155,89,255,0.45)"},{id:"A",label:"A",color:"#7DF9FF",glow:"rgba(125,249,255,0.55)",bg:"rgba(125,249,255,0.10)",border:"rgba(125,249,255,0.40)"},{id:"B",label:"B",color:"#E2E2F8",glow:"rgba(226,226,248,0.50)",bg:"rgba(226,226,248,0.08)",border:"rgba(226,226,248,0.32)"},{id:"C",label:"C",color:"#FFD700",glow:"rgba(255,215,0,0.55)",bg:"rgba(255,215,0,0.10)",border:"rgba(255,215,0,0.42)"},{id:"D",label:"D",color:"#B0B0C0",glow:"rgba(176,176,192,0.45)",bg:"rgba(176,176,192,0.07)",border:"rgba(176,176,192,0.28)"},{id:"E",label:"E",color:"#CD7F32",glow:"rgba(205,127,50,0.55)",bg:"rgba(205,127,50,0.10)",border:"rgba(205,127,50,0.40)"}];
+var STORAGE_KEY="nft-tierlist-v1",MAX_HISTORY=30;
+var items=[],undoStack=[],dragId=null;
+var currentDropZone=null,currentInsertBefore=null,currentInsertAfter=null;
+var ctxItem=null,ctxColor=null,modalItem=null,modalMode=null;
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(items));}catch(e){}}
+function load(){try{var d=localStorage.getItem(STORAGE_KEY);if(d){items=JSON.parse(d);}else{items=JSON.parse(JSON.stringify(window._P||[]));try{localStorage.setItem(STORAGE_KEY,JSON.stringify(items));}catch(e){}}}catch(e){items=JSON.parse(JSON.stringify(window._P||[]));}render();}
+var _tt;
+function showToast(m,c,b){var t=document.getElementById("toast");t.textContent=m;t.style.display="block";t.style.color=c;t.style.border="1px solid "+b;clearTimeout(_tt);_tt=setTimeout(function(){t.style.display="none";},2000);}
+function pushHistory(){undoStack.push(JSON.parse(JSON.stringify(items)));if(undoStack.length>MAX_HISTORY)undoStack.shift();updateUndoBtn();}
+function undo(){if(!undoStack.length)return;items=undoStack.pop();try{localStorage.setItem(STORAGE_KEY,JSON.stringify(items));}catch(e){}render();showToast("undone","#b47fff","rgba(155,89,255,0.4)");updateUndoBtn();}
+function updateUndoBtn(){var b=document.getElementById("btn-undo");if(b){b.disabled=undoStack.length===0;}}
+function getTierItems(tid){return items.filter(function(i){return i.tier===tid;}).sort(function(a,b){return a.order-b.order;});}
+function initBg(){var bg=document.getElementById("bg");for(var i=0;i<38;i++){var d=document.createElement("div");var sz=1.5+Math.random()*2.5,dur=2.5+Math.random()*4,dl=Math.random()*6;d.style.cssText="position:absolute;left:"+(Math.random()*100)+"%;top:"+(Math.random()*100)+"%;width:"+sz+"px;height:"+sz+"px;border-radius:50%;background:#fff;box-shadow:0 0 "+(sz*3)+"px "+sz+"px rgba(255,255,255,0.6);animation:dot-blink "+dur+"s "+dl+"s ease-in-out infinite;opacity:0;";bg.appendChild(d);}}
+
+function resetAll(){
+  var ranked=document.querySelectorAll("#tiers .nft-wrap[data-id]");
+  if(ranked.length===0)return;
+
+  pushHistory();
+
+  // Fade out all ranked cards simultaneously
+  ranked.forEach(function(card){
+    card.style.transition="opacity 0.25s ease, transform 0.25s ease";
+    card.style.opacity="0";
+    card.style.transform="scale(0.8)";
+  });
+
+  setTimeout(function(){
+    items.forEach(function(it,i){it.tier=null;it.order=i;});
+    save();
+    render();
+    // Fade in ALL unranked cards simultaneously
+    var ucards=document.querySelectorAll("#unranked-cards .nft-wrap[data-id]");
+    ucards.forEach(function(card){
+      card.style.transition="none";
+      card.style.opacity="0";
+      card.style.transform="scale(0.85)";
+    });
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        ucards.forEach(function(card){
+          card.style.transition="opacity 0.3s ease, transform 0.3s ease";
+          card.style.opacity="1";
+          card.style.transform="scale(1)";
+        });
+      });
+    });
+  },280);
+}
+
+
+var searchQuery="";
+
+function doSearch(q){
+  searchQuery=q.trim().toLowerCase();
+  var clear=document.getElementById("search-clear");
+  if(clear)clear.style.display=searchQuery?"block":"none";
+  applySearch();
+}
+
+function clearSearch(){
+  searchQuery="";
+  var inp=document.getElementById("search-input");
+  if(inp)inp.value="";
+  var clear=document.getElementById("search-clear");
+  if(clear)clear.style.display="none";
+  applySearch();
+}
+
+function applySearch(){
+  document.querySelectorAll(".nft-wrap[data-id]").forEach(function(card){
+    card.classList.remove("search-dim","search-match");
+    if(!searchQuery)return;
+    var id=card.dataset.id;
+    var it=items.find(function(i){return i.id===id;});
+    var name=it?it.name.toLowerCase():"";
+    if(name.indexOf(searchQuery)!==-1){
+      card.classList.add("search-match");
+    } else {
+      card.classList.add("search-dim");
+    }
+  });
+
+  // Remove "no match" messages
+  document.querySelectorAll(".search-no-results").forEach(function(el){el.parentNode.removeChild(el);});
+}
+
+
+
+function takeScreenshot(){
+  var flash=document.getElementById("screenshot-flash");
+  if(!flash){flash=document.createElement("div");flash.id="screenshot-flash";document.body.appendChild(flash);}
+
+  document.querySelectorAll(".search-dim").forEach(function(el){el.classList.add("ss-tmp");el.classList.remove("search-dim");});
+
+  // Temporarily hide search/hint in real DOM (not clone) so layout reflows
+  var searchWrap=document.getElementById("search-wrap");
+  var hint=document.getElementById("hint");
+  var prevS=searchWrap?searchWrap.style.display:"";
+  var prevH=hint?hint.style.display:"";
+  if(searchWrap)searchWrap.style.display="none";
+  if(hint)hint.style.display="none";
+
+  // Wait a frame for reflow
+  requestAnimationFrame(function(){
+  requestAnimationFrame(function(){
+
+  html2canvas(document.getElementById("content"),{
+    backgroundColor:"#06060a",
+    scale:2,
+    useCORS:true,
+    allowTaint:true,
+    logging:false,
+    onclone:function(doc){
+      doc.querySelectorAll("link[href*='fonts.googleapis']").forEach(function(l){l.parentNode.removeChild(l);});
+      var style=doc.createElement("style");
+      style.textContent=(
+        "#navbar,#ctx-menu,#ghost,#toast,#admin-overlay,#file-drop-overlay,#ss-modal,#search-wrap,#hint{display:none!important;}" +
+        "#title{font-family:Impact,'Arial Black',sans-serif!important;font-size:54px!important;letter-spacing:8px!important;line-height:1.2!important;overflow:visible!important;white-space:nowrap!important;text-align:center!important;animation:none!important;transform:none!important;filter:none!important;opacity:1!important;padding-top:0!important;margin-top:0!important;margin-bottom:16px!important;clip:auto!important;clip-path:none!important;}" +"#title span{font-family:Impact,'Arial Black',sans-serif!important;color:#22c55e!important;animation:none!important;opacity:1!important;transform:none!important;display:inline!important;}" +"*{animation-play-state:paused!important;}" +"#content{padding-top:16px!important;padding-bottom:40px!important;}" +".tier-empty{display:none!important;}" +
+        "#title span{color:#22c55e!important;font-family:Impact,'Arial Black',sans-serif!important;}" +
+        ".tier-label{font-family:Impact,'Arial Black',sans-serif!important;}" +
+        ".tier-empty{font-family:Consolas,'Courier New',monospace!important;position:static!important;transform:none!important;}" +
+        ".nft-name,#footer a,#unranked-divider span{font-family:Consolas,'Courier New',monospace!important;}" +
+        "#footer{opacity:1!important;}" +
+        "#footer a{color:rgba(255,255,255,0.55)!important;}"
+      );
+      doc.head.appendChild(style);
+    }
+  }).then(function(canvas){
+    // Restore
+    if(searchWrap)searchWrap.style.display=prevS;
+    if(hint)hint.style.display=prevH;
+    document.querySelectorAll(".ss-tmp").forEach(function(el){el.classList.remove("ss-tmp");el.classList.add("search-dim");});
+    flash.style.transition="none";flash.style.opacity="0.5";
+    setTimeout(function(){flash.style.transition="opacity 0.35s";flash.style.opacity="0";},80);
+    showSaveModal(canvas);
+  }).catch(function(err){
+    if(searchWrap)searchWrap.style.display=prevS;
+    if(hint)hint.style.display=prevH;
+    document.querySelectorAll(".ss-tmp").forEach(function(el){el.classList.remove("ss-tmp");el.classList.add("search-dim");});
+    console.error(err);
+  });
+
+  });});
+}
+
+
+function showSaveModal(canvas){
+  var existing=document.getElementById("ss-modal");
+  if(existing)existing.parentNode.removeChild(existing);
+
+  var overlay=document.createElement("div");
+  overlay.id="ss-modal";
+  overlay.style.cssText="position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;animation:ctx-appear 0.18s ease both;";
+
+  var box=document.createElement("div");
+  box.style.cssText="background:#0e0e14;border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px;align-items:center;box-shadow:0 24px 64px rgba(0,0,0,0.8);max-width:92vw;";
+
+  var prev=document.createElement("img");
+  prev.src=canvas.toDataURL("image/png");
+  prev.style.cssText="max-width:min(560px,85vw);max-height:45vh;border-radius:10px;border:1px solid rgba(255,255,255,0.08);object-fit:contain;display:block;";
+  box.appendChild(prev);
+
+  var row=document.createElement("div");
+  row.style.cssText="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;";
+
+
+
+  // DOWNLOAD button
+  var btnDl=document.createElement("button");
+  btnDl.style.cssText="background:rgba(155,89,255,0.08);border:1px solid rgba(155,89,255,0.3);color:rgba(155,89,255,0.9);font-size:11px;padding:9px 20px;cursor:pointer;border-radius:9px;font-family:'Space Mono',monospace;letter-spacing:1px;display:flex;align-items:center;gap:7px;transition:all 0.2s;";
+  btnDl.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>DOWNLOAD';
+  btnDl.onclick=function(){
+    var link=document.createElement("a");
+    link.download="nft-tierlist.png";
+    link.href=canvas.toDataURL("image/png");
+    document.body.appendChild(link);link.click();document.body.removeChild(link);
+  };
+
+  // CLOSE button
+  var btnClose=document.createElement("button");
+  btnClose.style.cssText="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);font-size:13px;padding:9px 14px;cursor:pointer;border-radius:9px;transition:all 0.2s;";
+  btnClose.textContent="✕";
+  btnClose.onclick=function(){overlay.parentNode&&overlay.parentNode.removeChild(overlay);};
+
+row.appendChild(btnDl);row.appendChild(btnClose);
+  box.appendChild(row);overlay.appendChild(box);document.body.appendChild(overlay);
+  overlay.addEventListener("click",function(e){if(e.target===overlay)overlay.parentNode&&overlay.parentNode.removeChild(overlay);});
+}
+
+
+function render(){
+  var el=document.getElementById("tiers");el.innerHTML="";
+  TIERS.forEach(function(tier){
+    var row=document.createElement("div");row.className="tier-row";row.dataset.zone=tier.id;
+    row.style.cssText="background:rgba(255,255,255,0.02);border-color:"+tier.border+";box-shadow:0 2px 16px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.04);";
+    var acc=document.createElement("div");acc.className="tier-accent";acc.style.background="linear-gradient(180deg,"+tier.color+" 0%,"+tier.color+"44 100%)";
+    var lbl=document.createElement("div");lbl.className="tier-label";lbl.style.cssText="border-right:1px solid "+tier.border+";color:"+tier.color+";text-shadow:0 0 20px "+tier.color+"88;";lbl.textContent=tier.label;
+    var cards=document.createElement("div");cards.className="tier-cards";cards.dataset.zone=tier.id;
+    var ri=getTierItems(tier.id);
+    if(ri.length===0){var e=document.createElement("span");e.className="tier-empty";e.textContent="Drop "+tier.label+"-tier here...";cards.appendChild(e);}
+    else{ri.forEach(function(it){cards.appendChild(makeCard(it,tier.color));});}
+    row.appendChild(acc);row.appendChild(lbl);row.appendChild(cards);el.appendChild(row);
+  });
+  var pool=document.getElementById("unranked-cards");pool.innerHTML="";
+  var ur=getTierItems(null);
+  if(ur.length===0){var e=document.createElement("span");e.style.cssText="color:rgba(255,255,255,0.1);font-size:11px;";e.textContent="Upload or drag here to unrank";pool.appendChild(e);}
+  else{ur.forEach(function(it){pool.appendChild(makeCard(it,"#888"));});}
+  setupZones();
+  if(searchQuery)applySearch();
+}
+function makeCard(item,color){
+  var wrap=document.createElement("div");wrap.className="nft-wrap";wrap.dataset.id=item.id;
+  var box=document.createElement("div");box.className="nft-img-box";
+  var img=document.createElement("img");img.src=item.image;img.alt=item.name;img.draggable=false;
+  box.appendChild(img);
+  box.addEventListener("mouseenter",function(){if(dragId)return;box.style.borderColor=color;box.style.boxShadow="0 0 22px "+color+"77,0 4px 16px rgba(0,0,0,0.6)";});
+  box.addEventListener("mouseleave",function(){box.style.borderColor="rgba(255,255,255,0.08)";box.style.boxShadow="";});
+  box.addEventListener("pointerdown",function(e){startDrag(e,item,color);});
+  box.addEventListener("contextmenu",function(e){openCtx(e,item,color);});
+  var nm=document.createElement("div");nm.className="nft-name";nm.textContent=item.name;
+  wrap.appendChild(box);wrap.appendChild(nm);return wrap;
+}
+
+function startDrag(e,item,color){
+  if(e.button!==0)return;
+  e.preventDefault();e.stopPropagation();
+  try{e.target.releasePointerCapture(e.pointerId);}catch(ex){}
+
+  // Ghost setup
+  var ghost=document.getElementById("ghost"),gi=document.getElementById("ghost-img");
+  gi.src=item.image;
+  ghost.style.borderColor=color;
+  ghost.style.boxShadow="0 8px 32px rgba(0,0,0,0.7),0 0 24px "+color+"88";
+  ghost.style.left=e.clientX+"px";ghost.style.top=e.clientY+"px";
+  ghost.style.display="block";
+  document.body.style.cursor="grabbing";
+  document.body.style.userSelect="none";
+
+  // Create placeholder — invisible card that holds the slot
+  var ph=document.createElement("div");
+  ph.className="nft-wrap drag-placeholder";
+  ph.dataset.placeholder="1";
+  ph.style.cssText="width:86px;height:103px;flex-shrink:0;pointer-events:none;opacity:0;";
+
+  // Find source card, replace with placeholder
+  dragId=item.id;
+  var srcCard=document.querySelector(".nft-wrap[data-id='"+item.id+"']");
+  if(srcCard&&srcCard.parentElement){
+    srcCard.parentElement.insertBefore(ph,srcCard);
+    srcCard.parentElement.removeChild(srcCard);
+  }
+
+  var dZone=null;
+
+  function getZone(mx,my){
+    ghost.style.display="none";
+    var el=document.elementFromPoint(mx,my);
+    ghost.style.display="block";
+    if(!el)return null;
+    var cur=el;
+    while(cur&&cur!==document.body){
+      if(cur.id==="unranked-pool"||cur.id==="unranked-cards")return "__unranked__";
+      if(cur.dataset&&cur.dataset.zone)return cur.dataset.zone;
+      cur=cur.parentElement;
+    }
+    var up=document.getElementById("unranked-pool");
+    if(up){var r=up.getBoundingClientRect();if(mx>=r.left&&mx<=r.right&&my>=r.top&&my<=r.bottom)return "__unranked__";}
+    return null;
+  }
+
+    function movePlaceholder(mx,my){
+    ghost.style.display="none";
+    var el=document.elementFromPoint(mx,my);
+    ghost.style.display="block";
+    if(!el)return;
+
+    // Find target card (any tier or unranked)
+    var cw=el.closest(".nft-wrap[data-id]:not([data-placeholder])");
+    if(cw){
+      var r=cw.getBoundingClientRect();
+      var isLeft=mx<r.left+r.width/2;
+      var cont=cw.parentElement;
+      if(!cont)return;
+      var refNode=isLeft?cw:cw.nextSibling;
+      if(ph.nextSibling===refNode&&ph.parentElement===cont)return;
+
+      flipMove(cont,function(){cont.insertBefore(ph,refNode);});
+      return;
+    }
+
+    // Over a tier-cards container (empty or gap at end)
+    var tc=el.closest(".tier-cards");
+    if(tc){
+      if(ph.parentElement===tc&&!tc.querySelector(".nft-wrap[data-id]:not([data-placeholder])~.nft-wrap[data-id]:not([data-placeholder])"))return;
+      if(ph.parentElement!==tc){flipMove(tc,function(){tc.appendChild(ph);});}
+      return;
+    }
+
+    // Over unranked-cards
+    var uc=el.closest("#unranked-cards");
+    if(uc){
+      if(ph.parentElement===uc)return;
+      flipMove(uc,function(){uc.appendChild(ph);});
+    }
+  }
+
+  function flipMove(cont,moveFn){
+    var cards=Array.from(cont.querySelectorAll(".nft-wrap[data-id]:not([data-placeholder])"));
+    // also grab cards from ph's old container if different
+    var oldCont=ph.parentElement;
+    var oldCards=oldCont&&oldCont!==cont?Array.from(oldCont.querySelectorAll(".nft-wrap[data-id]:not([data-placeholder])")):[];
+    var allCards=cards.concat(oldCards.filter(function(c){return cards.indexOf(c)===-1;}));
+
+    // Record before positions
+    var before={};
+    allCards.forEach(function(c){
+      var r=c.getBoundingClientRect();
+      before[c.dataset.id]={x:r.left,y:r.top};
+      c.style.transition="none";
+      c.style.transform="";
+    });
+
+    // Do the DOM move
+    moveFn();
+
+    // Animate
+    requestAnimationFrame(function(){
+      allCards.forEach(function(c){
+        var r=c.getBoundingClientRect();
+        var b=before[c.dataset.id];
+        if(!b)return;
+        var dx=b.x-r.left,dy=b.y-r.top;
+        if(Math.abs(dx)<0.5&&Math.abs(dy)<0.5)return;
+        c.style.transition="none";
+        c.style.transform="translate("+dx+"px,"+dy+"px)";
+        requestAnimationFrame(function(){
+          c.style.transition="transform 0.16s cubic-bezier(0.25,0.46,0.45,0.94)";
+          c.style.transform="";
+        });
+      });
+    });
+  }
+
+  function onMove(mv){
+    ghost.style.left=mv.clientX+"px";ghost.style.top=mv.clientY+"px";
+    clearZones();
+    var up=document.getElementById("unranked-pool");
+    if(up){up.style.borderColor="rgba(255,255,255,0.08)";up.style.background="rgba(255,255,255,0.018)";up.style.boxShadow="";}
+
+    dZone=getZone(mv.clientX,mv.clientY);
+
+    if(dZone==="__unranked__"){
+      if(up){up.style.borderColor="rgba(255,255,255,0.45)";up.style.background="rgba(255,255,255,0.08)";up.style.boxShadow="0 0 0 2px rgba(255,255,255,0.2)";}
+      // move placeholder to unranked
+      var uc=document.getElementById("unranked-cards");
+      if(uc&&ph.parentElement!==uc)uc.appendChild(ph);
+      return;
+    }
+    if(dZone)hlZone(dZone,true,color);
+
+    movePlaceholder(mv.clientX,mv.clientY);
+  }
+
+  function onUp(){
+    document.removeEventListener("pointermove",onMove,true);
+    document.removeEventListener("pointerup",onUp,true);
+    document.body.style.cursor="";document.body.style.userSelect="";
+    ghost.style.display="none";
+    clearInd();clearZones();
+    var up=document.getElementById("unranked-pool");
+    if(up){up.style.borderColor="";up.style.background="";up.style.boxShadow="";}
+
+    // Read final position from placeholder location
+    var phParent=ph.parentElement;
+    var newTier=null;
+    if(phParent){
+      if(phParent.id==="unranked-cards"){
+        newTier=null;
+      } else if(phParent.dataset&&phParent.dataset.zone){
+        newTier=phParent.dataset.zone;
+      } else {
+        // try parent
+        var p2=phParent.parentElement;
+        if(p2&&p2.dataset&&p2.dataset.zone)newTier=p2.dataset.zone;
+      }
+
+      // Build new order from DOM
+      var siblings=Array.from(phParent.querySelectorAll(".nft-wrap[data-id]:not([data-placeholder])"));
+      var phIdx=Array.from(phParent.children).indexOf(ph);
+
+      // Remove placeholder from DOM
+      phParent.removeChild(ph);
+
+      pushHistory();
+      var dr=items.find(function(i){return i.id===item.id;});
+      if(dr){
+        // Get all items in this container
+        var tierItems=items.filter(function(i){return i.tier===newTier&&i.id!==item.id;}).sort(function(a,b){return a.order-b.order;});
+        // Insert drag item at phIdx position among siblings
+        // siblings gives us the ordered IDs of existing cards
+        var orderedIds=siblings.map(function(el){return el.dataset.id;});
+        // find insert index by counting siblings before phIdx
+        var insertAt=0;
+        var phDomIdx=phIdx;
+        // count non-placeholder siblings before ph
+        var allChildren=Array.from(phParent.children);
+        var count=0;
+        for(var i=0;i<allChildren.length;i++){
+          if(allChildren[i]===ph)break; // ph already removed, use phIdx
+        }
+        insertAt=Math.min(phIdx,orderedIds.length);
+
+        // Rebuild order
+        orderedIds.splice(insertAt,0,item.id);
+        orderedIds.forEach(function(id,idx){
+          var it=items.find(function(i){return i.id===id;});
+          if(it){it.tier=newTier;it.order=idx;}
+        });
+        save();
+      }
+    } else {
+      ph.parentElement&&ph.parentElement.removeChild(ph);
+    }
+
+    dragId=null;
+    render();
+
+    requestAnimationFrame(function(){
+      var card=document.querySelector(".nft-wrap[data-id='"+item.id+"']");
+      if(card){
+        card.style.transition="none";card.style.opacity="0";card.style.transform="scale(0.85)";
+        requestAnimationFrame(function(){
+          card.style.transition="opacity 0.15s,transform 0.15s";
+          card.style.opacity="1";card.style.transform="scale(1)";
+        });
+      }
+    });
+  }
+
+  document.addEventListener("pointermove",onMove,true);
+  document.addEventListener("pointerup",onUp,true);
+}
+
+function applyDrop(id,zone,ib,ia){
+  var dr=items.find(function(i){return i.id===id;});if(!dr)return;
+  if(ib||ia){
+    var rid=ib||ia;var rc=items.find(function(i){return i.id===rid;});if(!rc)return;
+    var tier=rc.tier;
+    var row=items.filter(function(i){return i.tier===tier&&i.id!==id;}).sort(function(a,b){return a.order-b.order;});
+    var idx=row.findIndex(function(i){return i.id===rid;});
+    row.splice(ia?idx+1:idx,0,Object.assign({},dr,{tier:tier}));
+    row.forEach(function(it,i){it.order=i;});
+    items=items.filter(function(i){return i.tier!==tier&&i.id!==id;}).concat(row);
+    save();return;
+  }
+  if(!zone)return;
+  var tier=zone==="__unranked__"?null:zone;
+  var t=items.filter(function(i){return i.tier===tier&&i.id!==id;});
+  var max=t.length?Math.max.apply(null,t.map(function(i){return i.order;})):-1;
+  var it=items.find(function(i){return i.id===id;});
+  if(it){it.tier=tier;it.order=max+1;}
+  save();
+}
+
+function showInd(w,s,c){var d=document.createElement("div");d.className=s==="left"?"insert-left":"insert-right";d.style.background=c;d.style.boxShadow="0 0 10px "+c;d.dataset.ii="1";w.appendChild(d);}
+function clearInd(){document.querySelectorAll("[data-ii]").forEach(function(e){e.remove();});}
+function hlZone(id,on,c){var el=document.querySelector("[data-zone='"+id+"']");if(!el)return;if(id==="__unranked__"){el.style.borderColor=on?"rgba(255,255,255,0.25)":"rgba(255,255,255,0.08)";el.style.background=on?"rgba(255,255,255,0.04)":"rgba(255,255,255,0.018)";}else{var tier=TIERS.find(function(t){return t.id===id;});if(tier){el.style.borderColor=on?tier.color:tier.border;el.style.background=on?tier.color+"08":"rgba(255,255,255,0.02)";el.style.boxShadow=on?"0 0 0 1px "+tier.color+"44,0 0 40px "+tier.glow+",inset 0 0 30px "+tier.bg:"0 2px 16px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.04)";var lb=el.querySelector(".tier-label");if(lb)lb.style.color=on?"#fff":tier.color;}}}
+function clearZones(){TIERS.forEach(function(t){var el=document.querySelector("[data-zone='"+t.id+"']");if(el){el.style.borderColor=t.border;el.style.background="rgba(255,255,255,0.02)";el.style.boxShadow="0 2px 16px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.04)";var lb=el.querySelector(".tier-label");if(lb)lb.style.color=t.color;}});var up=document.getElementById("unranked-pool");if(up){up.style.borderColor="rgba(255,255,255,0.08)";up.style.background="rgba(255,255,255,0.018)";}}
+function setupZones(){document.querySelectorAll("[data-zone]").forEach(function(el){el.addEventListener("mouseenter",function(){if(dragId&&!currentInsertBefore&&!currentInsertAfter)hlZone(el.dataset.zone,true,null);});el.addEventListener("mouseleave",function(){clearZones();});});}
+function openCtx(e,item,color){
+  e.preventDefault();e.stopPropagation();ctxItem=item;ctxColor=color;
+  var menu=document.getElementById("ctx-menu");
+  menu.style.left=Math.min(e.clientX,window.innerWidth-180)+"px";
+  menu.style.top=Math.min(e.clientY,window.innerHeight-140)+"px";
+  menu.style.border="1px solid "+color+"44";menu.style.display="block";
+  var rn=document.getElementById("ctx-rename");
+  rn.style.color="rgba(255,255,255,0.85)";
+  rn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="'+color+'" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Rename';
+  rn.onmouseenter=function(){rn.style.background=color+"22";};rn.onmouseleave=function(){rn.style.background="none";};
+  var sep=document.getElementById("ctx-sep-os");var os=document.getElementById("ctx-opensea");
+  if(os){
+    os.style.display=item.opensea?"flex":"none";if(sep)sep.style.display=item.opensea?"block":"none";
+    if(item.opensea){
+      os.style.color="#2081E2";
+      os.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="#2081E2"><path d="M12 0C5.374 0 0 5.374 0 12s5.374 12 12 12 12-5.374 12-12S18.629 0 12 0zm-1.246 16.264l-3.6-3.6 1.06-1.06 2.54 2.54 5.486-5.486 1.06 1.06-6.546 6.546z"/></svg>OpenSea';
+      os.onclick=function(){window.open(item.opensea,"_blank");closeCtx();};
+      os.onmouseenter=function(){os.style.background="rgba(32,129,226,0.15)";};
+      os.onmouseleave=function(){os.style.background="none";};
+    }
+  }
+  var dl=document.getElementById("ctx-delete");
+  dl.style.color="#f87171";
+  dl.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Delete';
+  dl.onmouseenter=function(){dl.style.background="rgba(239,68,68,0.12)";};dl.onmouseleave=function(){dl.style.background="none";};}
+function closeCtx(){document.getElementById("ctx-menu").style.display="none";}
+function ctxRename(){closeCtx();if(ctxItem)openModal(ctxItem,"rename");}
+function ctxDelete(){closeCtx();if(!ctxItem)return;pushHistory();items=items.filter(function(i){return i.id!==ctxItem.id;});save();render();}
+document.addEventListener("click",function(){closeCtx();});
+document.addEventListener("contextmenu",function(e){if(!e.target.closest(".nft-img-box"))closeCtx();});
+function openModal(item,mode){
+  modalItem=item;modalMode=mode||"rename";
+  var inp=document.getElementById("modal-input");inp.value=item.name;
+  document.getElementById("modal-overlay").style.display="flex";
+  setTimeout(function(){inp.focus();},40);
+}
+function closeModal(){document.getElementById("modal-overlay").style.display="none";modalItem=null;}
+function modalSave(){
+  if(!modalItem)return;
+  var val=document.getElementById("modal-input").value.trim();
+  if(val){pushHistory();var it=items.find(function(i){return i.id===modalItem.id;});if(it){it.name=val;save();render();}}
+  closeModal();
+}
+function handleFiles(files){var arr=Array.from(files).filter(function(f){return f.type.startsWith("image/");});if(!arr.length)return;var done=0;arr.forEach(function(file){var r=new FileReader();r.onload=function(ev){pushHistory();items.push({id:"nft-"+Date.now()+"-"+Math.random().toString(36).slice(2),name:file.name.replace(/\.[^.]+$/,""),image:ev.target.result,tier:null,order:Date.now()+done,opensea:""});done++;if(done===arr.length){save();render();}};r.readAsDataURL(file);});}
+document.addEventListener("dragover",function(e){e.preventDefault();if([].slice.call(e.dataTransfer.types).indexOf("Files")>=0)document.getElementById("file-drop-overlay").style.display="flex";});
+document.addEventListener("dragleave",function(e){if(!e.relatedTarget||e.relatedTarget===document.body)document.getElementById("file-drop-overlay").style.display="none";});
+document.addEventListener("drop",function(e){e.preventDefault();document.getElementById("file-drop-overlay").style.display="none";if(e.dataTransfer.files.length)handleFiles(e.dataTransfer.files);});
+initBg();
+load();
+
+var adminOpen = false;
+
+function openAdmin(){
+  adminOpen = true;
+  document.getElementById("admin-panel").style.display = "flex";
+  renderAdmin();
+}
+function closeAdmin(){
+  adminOpen = false;
+  document.getElementById("admin-panel").style.display = "none";
+  render();
+}
+
+function renderAdmin(){
+  var grid = document.getElementById("admin-grid");
+  var empty = document.getElementById("admin-empty");
+  var stats = document.getElementById("admin-stats");
+  stats.textContent = items.length + " COLLECTIONS";
+  if(items.length === 0){
+    grid.style.display = "none";
+    empty.style.display = "flex";
+    return;
+  }
+  empty.style.display = "none";
+  grid.style.display = "grid";
+  grid.innerHTML = "";
+  var sorted = items.slice().sort(function(a,b){return a.order-b.order;});
+  sorted.forEach(function(item){
+    var card = document.createElement("div");
+    card.className = "admin-card";
+
+    // Image
+    var imgBox = document.createElement("div");
+    imgBox.className = "admin-card-img";
+    var img = document.createElement("img");
+    img.src = item.image; img.alt = item.name;
+    var overlay = document.createElement("div");
+    overlay.className = "admin-card-img-overlay";
+    overlay.textContent = "CHANGE IMAGE";
+    imgBox.appendChild(img); imgBox.appendChild(overlay);
+    imgBox.onclick = function(){
+      var inp = document.createElement("input");
+      inp.type = "file"; inp.accept = "image/*";
+      inp.onchange = function(){
+        if(!inp.files[0]) return;
+        var r = new FileReader();
+        r.onload = function(ev){
+          pushHistory();
+          var it = items.find(function(i){return i.id===item.id;});
+          if(it){ it.image = ev.target.result; save(); renderAdmin(); }
+        };
+        r.readAsDataURL(inp.files[0]);
+      };
+      inp.click();
+    };
+
+    // Name field
+    var nameField = document.createElement("div"); nameField.className = "admin-field";
+    var nameLbl = document.createElement("div"); nameLbl.className = "admin-label"; nameLbl.textContent = "NAME";
+    var nameInp = document.createElement("input"); nameInp.className = "admin-input"; nameInp.value = item.name;
+    nameInp.onchange = function(){
+      var val = nameInp.value.trim();
+      if(!val) return;
+      pushHistory();
+      var it = items.find(function(i){return i.id===item.id;});
+      if(it){ it.name = val; save(); }
+    };
+    nameField.appendChild(nameLbl); nameField.appendChild(nameInp);
+
+    // OpenSea field
+    var osField = document.createElement("div"); osField.className = "admin-field";
+    var osLbl = document.createElement("div"); osLbl.className = "admin-label"; osLbl.textContent = "OPENSEA URL";
+    var osInp = document.createElement("input"); osInp.className = "admin-input opensea";
+    osInp.placeholder = "https://opensea.io/...";
+    osInp.value = item.opensea || "";
+    osInp.onchange = function(){
+      pushHistory();
+      var it = items.find(function(i){return i.id===item.id;});
+      if(it){ it.opensea = osInp.value.trim(); save(); }
+    };
+    osField.appendChild(osLbl); osField.appendChild(osInp);
+
+    // Delete btn
+    var delBtn = document.createElement("button"); delBtn.className = "admin-del"; delBtn.textContent = "REMOVE";
+    delBtn.onclick = function(){
+      pushHistory();
+      items = items.filter(function(i){return i.id!==item.id;});
+      save(); renderAdmin();
+    };
+
+    card.appendChild(imgBox);
+    card.appendChild(nameField);
+    card.appendChild(osField);
+    card.appendChild(delBtn);
+    grid.appendChild(card);
+  });
+}
+
+function adminHandleFiles(files){
+  var arr = Array.from(files).filter(function(f){return f.type.startsWith("image/");});
+  if(!arr.length) return;
+  var done = 0;
+  arr.forEach(function(file){
+    var r = new FileReader();
+    r.onload = function(ev){
+      pushHistory();
+      items.push({id:"nft-"+Date.now()+"-"+Math.random().toString(36).slice(2),name:file.name.replace(/\.[^.]+$/,""),image:ev.target.result,tier:null,order:Date.now()+done,opensea:""});
+      done++;
+      if(done===arr.length){ save(); renderAdmin(); }
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+function bakeToHTML(){
+  if(!items.length){alert("Сначала добавь коллекции!");return;}
+
+  var preset = items.map(function(i){
+    return {id:i.id, name:i.name, image:i.image, tier:i.tier||null, order:i.order, opensea:i.opensea||""};
+  });
+  var presetJson = JSON.stringify(preset);
+  var deployVer = Date.now().toString(36);
+
+  // Get full source HTML
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', window.location.href, false);
+  xhr.send();
+  var src = xhr.responseText;
+
+  // Strip admin panel HTML
+  src = src.replace(/<!--ADMIN-START-->[\s\S]*?<!--ADMIN-END-->/, '');
+  // Strip admin button
+  src = src.replace(/<!--ADMINBTN-START-->[\s\S]*?<!--ADMINBTN-END-->/, '');
+  // Strip admin CSS (openAdmin, admin-panel etc) - leave it, just JS won't call it
+  // Remove admin marker comments
+  src = src.replace(/<!--ADMIN[^>]*-->/g, '');
+
+  // Remove any existing window._P / _DEPLOY_VER injections
+  src = src.replace(/window\._P\s*=[\s\S]*?;\s*\n/g, '');
+  src = src.replace(/window\._DEPLOY_VER[\s\S]*?;\s*\n/g, '');
+  src = src.replace(/\/\/ Auto-reset localStorage[\s\S]*?\}\)\(\);[\s\S]*?\n/g, '');
+
+  // Inject preset + version reset at top of <script>
+  var injection = '\nwindow._P=' + presetJson + ';\n' +
+    '(function(){try{' +
+    'var v=localStorage.getItem("nft-deploy-ver");' +
+    'if(v!=="' + deployVer + '"){' +
+    'localStorage.removeItem("nft-tierlist-v1");' +
+    'localStorage.setItem("nft-deploy-ver","' + deployVer + '");' +
+    '}}catch(e){}})();\n';
+
+  src = src.replace(/(<script[^>]*>)/, '$1' + injection);
+
+  var blob = new Blob([src], {type:"text/html;charset=utf-8"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = "index.html";
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("index.html готов!", "#FFD700", "rgba(255,215,0,0.4)");
+}
+
+// Drag-drop into admin panel
+var adminPanel = null;
+window.addEventListener("load", function(){
+  adminPanel = document.getElementById("admin-panel");
+  adminPanel.addEventListener("dragover", function(e){
+    e.preventDefault();
+    if([].slice.call(e.dataTransfer.types).indexOf("Files")>=0)
+      document.getElementById("admin-drop-zone").style.display="flex";
+  });
+  adminPanel.addEventListener("dragleave", function(e){
+    if(!adminPanel.contains(e.relatedTarget))
+      document.getElementById("admin-drop-zone").style.display="none";
+  });
+  adminPanel.addEventListener("drop", function(e){
+    e.preventDefault();
+    document.getElementById("admin-drop-zone").style.display="none";
+    if(e.dataTransfer.files.length) adminHandleFiles(e.dataTransfer.files);
+  });
+});
+
+</script>
+</body>
+</html>
